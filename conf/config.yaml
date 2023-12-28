@@ -1,0 +1,27 @@
+Optimization_args:
+  store_data: True
+  data_dir: 'data/'
+  model_dir: 'models/'
+  log_dir: 'logs/'
+  wandb: False
+
+repository:
+  matplotlib: "https://github.com/matplotlib/matplotlib"
+  numpy: "https://github.com/numpy/numpy"
+  pandas: "https://github.com/pandas-dev/pandas"
+  opencv: "https://github.com/opencv/opencv-python"
+  scikit-learn: "https://github.com/scikit-learn/scikit-learn"
+  pytorch: 'https://github.com/pytorch/pytorch'
+  tensorflow: 'https://github.com/tensorflow/tensorflow'
+  huggingface: 'https://github.com/huggingface/transformers'
+  accelerate: 'https://github.com/huggingface/accelerate'
+
+
+
+lora_config:
+  r: 8
+  target_modules: '\((\w+)\): Linear'
+  lora_dropout: 0.01
+  bias: none
+  task_type: "CAUSAL_LM"
+

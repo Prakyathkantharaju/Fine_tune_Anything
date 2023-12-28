@@ -1,0 +1,8 @@
+hydra-core
+pytorch
+huggingface
+pandas
+numpy
+wandb
+transformers
+datasets
