@@ -10,6 +10,12 @@ repositories = {
     'matplotlib': "https://github.com/matplotlib/matplotlib",
     'numpy': "https://github.com/numpy/numpy",
     'pandas': "https://github.com/pandas-dev/pandas",
+    'opencv': "https://github.com/opencv/opencv-python",
+    'scikit-learn': "https://github.com/scikit-learn/scikit-learn",
+    'pytorch': 'https://github.com/pytorch/pytorch',
+    'tensorflow': 'https://github.com/tensorflow/tensorflow',
+    'huggingface': 'https://github.com/huggingface/transformers',
+    'accelerate': 'https://github.com/huggingface/accelerate',
 }
 
 def download_extract_zip(url, destination_folder):

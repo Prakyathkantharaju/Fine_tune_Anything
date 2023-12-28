@@ -17,7 +17,7 @@ vs = Dataset.from_pandas(vs)
 ds = DatasetDict({'train': ds, 'validation': vs})
 
 def convert_sentence(file):
-    test = tokenizer(["".join(x) + "<|endoftext|>"  for x in file['text']])
+    test = tokenizer(["".join(x)  for x in file['text']])
     test['labels'] = test['input_ids'].copy()
     return test
 
