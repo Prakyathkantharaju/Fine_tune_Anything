@@ -15,7 +15,7 @@ class CustomTrainer(Trainer):
         """
         Custom loss computation for cross-entropy loss.
         """
-        labels = inputs.pop("labels")
+        labels = inputs.pop("inputs_ids")
         outputs = model(**inputs)
         logits = outputs.get("logits")
         # Ensure logits are reshaped correctly
