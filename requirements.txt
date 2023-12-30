@@ -1,8 +1,9 @@
 hydra-core
-pytorch
+torch
 huggingface
 pandas
 numpy
 wandb
 transformers
 datasets
+peft

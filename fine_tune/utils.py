@@ -15,7 +15,7 @@ def _download_extract_zip(url: str, destination_folder: str) -> None:
 
 
 def download_data(args: Dict, location: str) -> None:
-    repositories = args.repositories
+    repositories = args['repositories']
     for key, value in repositories.items():
         logging.info(f"Downloading {key} from {value}") 
         if not os.path.exists("data/" + key):

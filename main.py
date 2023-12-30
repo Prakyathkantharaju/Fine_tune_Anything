@@ -2,9 +2,10 @@
 import hydra
 from omegaconf import DictConfig, OmegaConf
 from fine_tune.utils import download_data, save_parquet_files
+from fine_tune.lora_fine_tune import Lora_fine_tuning
 
 # input args
-from fine_tune.utils import get_args
+# from fine_tune.utils import get_args
 
 
 @hydra.main(config_path="conf", config_name="config", version_base = None)
@@ -18,6 +19,10 @@ def main(cfg: DictConfig):
     save_parquet_files(config['Optimization']['data_dir'])
 
     # lora training
+    Lora_fine_tuning(config['Optimization']['model_name'],
+                     config['Optimization']['tokenizer_name'],
+                     config)
+    
     
 
 
