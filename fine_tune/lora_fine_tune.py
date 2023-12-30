@@ -14,7 +14,7 @@ class Lora_fine_tuning:
                  tokenizer_name: str,
                  config: Dict) -> None:
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, cache='/models')
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self._config = config
         logging.info("Model and tokenizer loaded")
