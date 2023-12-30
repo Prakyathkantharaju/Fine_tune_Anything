@@ -82,7 +82,7 @@ class Lora_fine_tuning:
     def _convert_sentence(self, file: pd.DataFrame) -> Dict:
         self.tokenizer.pad_token = self.tokenizer.eos_token
         test = self.tokenizer(["".join(x) for x in file['text']], 
-                              max_length=256, truncation=True, padding="max_length") #TODO: change the max_length to a config file
+                              max_length=128, truncation=True) #TODO: change the max_length to a config file
         # make sure the length is less than 2048
         test['input_ids'] = [x for x in test['input_ids']]
         test['attention_mask'] = [x for x in test['attention_mask']]
