@@ -73,8 +73,8 @@ class Lora_fine_tuning:
     
 
     def _generate_token(self) -> None:
-        ts = Dataset.from_pandas(pd.read_parquet(self._path + 'train.parquet')[:20000])
-        vs = Dataset.from_pandas(pd.read_parquet(self._path + 'test.parquet')[:2000])
+        ts = Dataset.from_pandas(pd.read_parquet(self._path + 'train.parquet')[:2000])
+        vs = Dataset.from_pandas(pd.read_parquet(self._path + 'test.parquet')[:200])
         self.ds = DatasetDict({'train': ts, 'validation': vs})
         self.tokenized_ds = self.ds.map(self._convert_sentence, batched=True, num_proc=4,
                                         remove_columns=['label', '__index_level_0__', 'text'])
