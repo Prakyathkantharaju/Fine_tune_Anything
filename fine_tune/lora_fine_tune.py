@@ -15,18 +15,22 @@ class CustomTrainer(Trainer):
         """
         Custom loss computation for cross-entropy loss.
         """
-        labels = inputs.pop("inputs_ids")
-        outputs = model(**inputs)
-        logits = outputs.get("logits")
-        # Ensure logits are reshaped correctly
-        # Logits should have shape [batch_size, num_classes]
-        batch_size = inputs['input_ids'].shape[0]
-        logits = logits.view(batch_size, -1, self.model.config.num_labels)
-        logits = logits[:, 0, :]  # Take the logits from the first token position
+        # Shift input_ids to the right to create labels
+        input_ids = inputs["input_ids"]
+        labels = input_ids.clone()
+        labels[:, :-1] = input_ids[:, 1:]
+        labels[:, -1] = -100  # Typically, -100 is used to mask the loss to ignore the prediction
+        inputs['labels'] = labels
 
-        # Compute cross-entropy loss
+        # Perform forward pass
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        # Compute loss
         loss_fct = CrossEntropyLoss()
-        loss = loss_fct(logits, labels)
+        # Reshape logits and labels to be [batch_size * sequence_length, vocab_size]
+        loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
+                                                    
         return (loss, outputs) if return_outputs else loss
 
 
