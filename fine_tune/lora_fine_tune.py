@@ -6,6 +6,22 @@ from transformers import AutoTokenizer, AutoModel, DataCollatorForLanguageModeli
 from datasets import Dataset, DatasetDict
 import peft
 from tqdm import tqdm, trange
+from torch.nn import CrossEntropyLoss
+
+class CustomTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        """
+        Custom loss computation for cross-entropy loss.
+        """
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        logits = outputs.get("logits")
+
+        # Compute custom loss (cross-entropy)
+        loss_fct = CrossEntropyLoss()
+        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+
+        return (loss, outputs) if return_outputs else loss
 
 
 class Lora_fine_tuning:
@@ -110,7 +126,7 @@ class Lora_fine_tuning:
             logging_dir='./logs',            # directory for storing logs
             logging_steps=10,
         )
-        trainer = Trainer(
+        trainer = CustomTrainer(
             model=self.peft_model,                         # the instantiated 🤗 Transformers model to be trained
             args=training_args,                  # training arguments, defined above
             train_dataset=self.tokenized_ds['train'],         # training dataset
