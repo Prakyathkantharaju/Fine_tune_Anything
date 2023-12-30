@@ -98,7 +98,7 @@ class Lora_fine_tuning:
 
 
 
-        # from transformers import Trainer, TrainingArguments
+        from transformers import Trainer, TrainingArguments
         training_args = TrainingArguments(
             output_dir='./results',          # output directory
             num_train_epochs=10,              # total number of training epochs
