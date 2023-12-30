@@ -1,6 +1,6 @@
 Optimization:
-  model_name: 'Salesforce/codegen25-7b-mono'
-  tokenizer_name: 'Salesforce/codegen25-7b-mono'
+  model_name: 'Salesforce/codegen-330M-mono'
+  tokenizer_name: 'Salesforce/codegen-330M-mono'
   store_data: True
   epochs: 10
   data_dir: 'data/'
