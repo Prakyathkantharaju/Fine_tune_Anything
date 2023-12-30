@@ -61,10 +61,10 @@ class Lora_fine_tuning:
     def _convert_sentence(self, file: pd.DataFrame) -> Dict:
         self.tokenizer.pad_token = self.tokenizer.eos_token
         test = self.tokenizer(["".join(x) for x in file['text']], 
-                              max_length=2048, truncation=True, padding="max_length") #TODO: change the max_length to a config file
+                              max_length=256, truncation=True, padding="max_length") #TODO: change the max_length to a config file
         # make sure the length is less than 2048
-        test['input_ids'] = [x[:2048] for x in test['input_ids']]
-        test['attention_mask'] = [x[:2048] for x in test['attention_mask']]
+        test['input_ids'] = [x for x in test['input_ids']]
+        test['attention_mask'] = [x for x in test['attention_mask']]
         # test['labels'] = test['input_ids'].copy()
         return test
     
@@ -101,11 +101,9 @@ class Lora_fine_tuning:
         from transformers import Trainer, TrainingArguments
         training_args = TrainingArguments(
             output_dir='./results',          # output directory
-            num_train_epochs=10,              # total number of training epochs
-            per_device_train_batch_size=16,  # batch size per device during training
-            per_device_eval_batch_size=64,   # batch size for evaluation
-            warmup_steps=500,                # number of warmup steps for learning rate scheduler
-            weight_decay=0.01,               # strength of weight decay
+            num_train_epochs=1,              # total number of training epochs
+            per_device_train_batch_size=1,  # batch size per device during training
+            per_device_eval_batch_size=1,   # batch size for evaluation
             logging_dir='./logs',            # directory for storing logs
             logging_steps=10,
         )
