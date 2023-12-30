@@ -18,11 +18,15 @@ class CustomTrainer(Trainer):
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         logits = outputs.get("logits")
+        # Ensure logits are reshaped correctly
+        # Logits should have shape [batch_size, num_classes]
+        batch_size = inputs['input_ids'].shape[0]
+        logits = logits.view(batch_size, -1, self.model.config.num_labels)
+        logits = logits[:, 0, :]  # Take the logits from the first token position
 
-        # Compute custom loss (cross-entropy)
+        # Compute cross-entropy loss
         loss_fct = CrossEntropyLoss()
-        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
-
+        loss = loss_fct(logits, labels)
         return (loss, outputs) if return_outputs else loss
 
 
