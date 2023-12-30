@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Union, Tuple
 import warnings, logging, re
 import pandas as pd
 import torch
-from transformers import AutoTokenizer, AutoModel, DataCollatorForLanguageModeling
+from transformers import AutoTokenizer, AutoModel, DataCollatorForLanguageModeling, AutoModelForCausalLM
 from datasets import Dataset, DatasetDict
 import peft
 from tqdm import tqdm, trange
@@ -14,7 +14,7 @@ class Lora_fine_tuning:
                  tokenizer_name: str,
                  config: Dict) -> None:
 
-        self.model = AutoModel.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, cache='/models')
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self._config = config
         logging.info("Model and tokenizer loaded")
