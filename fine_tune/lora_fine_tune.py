@@ -16,8 +16,8 @@ class Lora_fine_tuning:
 
         # self.model = AutoModelForCausalLM.from_pretrained(model_name)
         # self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-        tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen2-1B")
-        model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-1B", trust_remote_code=True, revision="main")
+        self.tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen2-1B")
+        self.model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-1B", trust_remote_code=True, revision="main")
 
         self._config = config
         logging.info("Model and tokenizer loaded")
