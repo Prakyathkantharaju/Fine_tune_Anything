@@ -7,6 +7,8 @@ from datasets import Dataset, DatasetDict
 import peft
 from tqdm import tqdm, trange
 from torch.nn import CrossEntropyLoss
+from transformers import Trainer, TrainingArguments
+
 
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -117,7 +119,6 @@ class Lora_fine_tuning:
 
 
 
-        from transformers import Trainer, TrainingArguments
         training_args = TrainingArguments(
             output_dir='./results',          # output directory
             num_train_epochs=1,              # total number of training epochs
