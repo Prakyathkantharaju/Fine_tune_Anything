@@ -14,8 +14,11 @@ class Lora_fine_tuning:
                  tokenizer_name: str,
                  config: Dict) -> None:
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        # self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        # self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen2-1B")
+        model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-1B", trust_remote_code=True, revision="main")
+
         self._config = config
         logging.info("Model and tokenizer loaded")
         self._path = config['Optimization']['data_dir']
