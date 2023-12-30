@@ -81,8 +81,8 @@ class Lora_fine_tuning:
     
 
     def _generate_token(self) -> None:
-        ts = Dataset.from_pandas(pd.read_parquet(self._path + 'train.parquet')[:2000])
-        vs = Dataset.from_pandas(pd.read_parquet(self._path + 'test.parquet')[:200])
+        ts = Dataset.from_pandas(pd.read_parquet(self._path + 'train.parquet'))
+        vs = Dataset.from_pandas(pd.read_parquet(self._path + 'test.parquet'))
         self.ds = DatasetDict({'train': ts, 'validation': vs})
         self.tokenized_ds = self.ds.map(self._convert_sentence, batched=True, num_proc=4,
                                         remove_columns=['label', '__index_level_0__', 'text'])
@@ -115,7 +115,11 @@ class Lora_fine_tuning:
 
 
     def _peft(self, arg: Dict) -> None:
-        config = peft.LoraConfig(**self._lora_config)
+        lora_config = dict(self._lora_config)
+        config = peft.LoraConfig(r=8,
+                target_modules=['lm_head', 'fc_in', 'out_proj', 'fc_out', 'qkv_proj'],
+                lora_dropout=0.05,
+                task_type = "CAUSAL_LM")
         logging.info("Lora config loaded")
         logging.info(f"lora config: {config}")
         self.peft_model = peft.get_peft_model(self.model, config)
@@ -129,9 +133,9 @@ class Lora_fine_tuning:
 
         training_args = TrainingArguments(
             output_dir='./results',          # output directory
-            num_train_epochs=1,              # total number of training epochs
-            per_device_train_batch_size=1,  # batch size per device during training
-            per_device_eval_batch_size=1,   # batch size for evaluation
+            num_train_epochs=5,              # total number of training epochs
+            per_device_train_batch_size=32,  # batch size per device during training
+            per_device_eval_batch_size=32,   # batch size for evaluation
             logging_dir='./logs',            # directory for storing logs
             logging_steps=10,
         )
