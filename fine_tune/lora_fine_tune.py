@@ -119,55 +119,57 @@ class Lora_fine_tuning:
 
 
 
-        training_args = TrainingArguments(
-            output_dir='./results',          # output directory
-            num_train_epochs=1,              # total number of training epochs
-            per_device_train_batch_size=1,  # batch size per device during training
-            per_device_eval_batch_size=1,   # batch size for evaluation
-            logging_dir='./logs',            # directory for storing logs
-            logging_steps=10,
-        )
-        trainer = CustomTrainer(
-            model=self.peft_model,                         # the instantiated 🤗 Transformers model to be trained
-            args=training_args,                  # training arguments, defined above
-            train_dataset=self.tokenized_ds['train'],         # training dataset
-            eval_dataset=self.tokenized_ds['validation'],
-            data_collator=self.data_collator             # evaluation dataset
-        )
-        trainer.train()
+        # training_args = TrainingArguments(
+        #     output_dir='./results',          # output directory
+        #     num_train_epochs=1,              # total number of training epochs
+        #     per_device_train_batch_size=1,  # batch size per device during training
+        #     per_device_eval_batch_size=1,   # batch size for evaluation
+        #     logging_dir='./logs',            # directory for storing logs
+        #     logging_steps=10,
+        # )
+        # trainer = CustomTrainer(
+        #     model=self.peft_model,                         # the instantiated 🤗 Transformers model to be trained
+        #     args=training_args,                  # training arguments, defined above
+        #     train_dataset=self.tokenized_ds['train'],         # training dataset
+        #     eval_dataset=self.tokenized_ds['validation'],
+        #     data_collator=self.data_collator             # evaluation dataset
+        # )
+        # trainer.train()
         
-        # training_loss = []
-        # validation_loss = []
-        # # training loop
-        # for epoch in trange(0, self._config['Optimization']['epochs']):
-        #     self.peft_model.train()
-        #     _traininig_loss = []
-        #     for batch in training:
-        #         self.peft_model.zero_grad()
-        #         print(batch.keys())
-        #         outputs = self.peft_model(batch['input_ids'], batch['attention_mask'])
-        #         loss = outputs.loss
-        #         loss.backward()
-        #         self.peft_model.optimizer.step()
-        #         _traininig_loss.append(loss.item())
-        #     training_loss.append(sum(_traininig_loss) / len(_traininig_loss))
+        training_loss = []
+        validation_loss = []
+        self.model.to('cuda')
+        # training loop
+        for epoch in trange(0, self._config['Optimization']['epochs']):
+            self.peft_model.train()
+            _traininig_loss = []
+            for batch in training:
+                self.peft_model.zero_grad()
+                print(batch.keys())
+                outputs = self.peft_model(batch['input_ids'].to("cuda"), batch['attention_mask'].to("cuda"))
+                loss = outputs.loss
+                loss.backward()
+                self.peft_model.optimizer.step()
+                _traininig_loss.append(loss.item())
+                print(f"Training loss: {loss.item()}")
+            training_loss.append(sum(_traininig_loss) / len(_traininig_loss))
             
             
-        #     # validation loop
-        #     self.peft_model.eval()
-        #     _validataion_loss = []
-        #     for batch in validation:
-        #         outputs = self.peft_model(batch['input_ids'], batch['attention_mask'])
-        #         loss = outputs.loss
-        #         self.peft_model.scheduler.step(loss)
-        #         _validataion_loss.append(loss.item())
-        #     validation_loss.append(sum(_validataion_loss) / len(_validataion_loss))
-        #     # This is for debugging
-        #     print(f"Epoch: {epoch} Training loss: {training_loss[-1]} Validation loss: {validation_loss[-1]}")
+            # validation loop
+            self.peft_model.eval()
+            _validataion_loss = []
+            for batch in validation:
+                outputs = self.peft_model(batch['input_ids'].to("cuda"), batch['attention_mask'].to("cuda"))
+                loss = outputs.loss
+                self.peft_model.scheduler.step(loss)
+                _validataion_loss.append(loss.item())
+            validation_loss.append(sum(_validataion_loss) / len(_validataion_loss))
+            # This is for debugging
+            print(f"Epoch: {epoch} Training loss: {training_loss[-1]} Validation loss: {validation_loss[-1]}")
 
-        #     if epoch % 10 == 0:
-        #         logging.info(f"Epoch: {epoch} Training loss: {training_loss[-1]} Validation loss: {validation_loss[-1]}")
-        #         self._save(training_loss, validation_loss)
+            if epoch % 10 == 0:
+                logging.info(f"Epoch: {epoch} Training loss: {training_loss[-1]} Validation loss: {validation_loss[-1]}")
+                self._save(training_loss, validation_loss)
 
 
 
