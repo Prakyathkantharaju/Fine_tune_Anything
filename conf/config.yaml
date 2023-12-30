@@ -1,6 +1,6 @@
 Optimization:
-  model_name: 'Salesforce/codegen2-1b-mono'
-  tokenizer_name: 'Salesforce/codegen2-1b-mono'
+  model_name: 'Salesforce/codegen2-1b'
+  tokenizer_name: 'Salesforce/codegen2-1b'
   store_data: True
   epochs: 10
   data_dir: 'data/'
