@@ -1,11 +1,19 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import warnings
 from pprint import pprint
+from transformers import BitsAndBytesConfig
+import torch
+config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
 warnings.filterwarnings("ignore")
 tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-350M-mono")
-model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-7b", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-2b-mono", trust_remote_code=True, quantization_config = config)
 # model.to("cuda")
-pprint([(n, type(m)) for n, m in model.named_modules()])
+# pprint([(n, type(m)) for n, m in model.named_modules()])
 
 text = "def hello_world(): <|endoftext|>"
 
@@ -25,8 +33,11 @@ print(target_modules)
 
 
 import peft
+from peft import prepare_model_for_kbit_training
+model = prepare_model_for_kbit_training(model)
 config = peft.LoraConfig(
-    r=8,
+    r=16,
+    lora_alpha=8,
     target_modules=target_modules,
     lora_dropout=0.01,
     bias="none",
@@ -45,24 +56,24 @@ print(peft_model.print_trainable_parameters())
 #print(tokenizer.decode(generated_ids[0], skip_special_tokens=True))
 
 
-def generate_one_completion(prompt):
-    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
-    input_ids = input_ids.to("cuda")
-    generated_ids = model.generate(input_ids, max_length=128, pad_token_id=tokenizer.eos_token_id)
-    return tokenizer.decode(generated_ids[0], skip_special_tokens=True)
+# def generate_one_completion(prompt):
+#     input_ids = tokenizer(prompt, return_tensors="pt").input_ids
+#     input_ids = input_ids.to("cuda")
+#     generated_ids = model.generate(input_ids, max_length=128, pad_token_id=tokenizer.eos_token_id)
+#     return tokenizer.decode(generated_ids[0], skip_special_tokens=True)
 
 
 
-def eval():
-    from human_eval.data import write_jsonl, read_problems
-    from tqdm import tqdm, trange
+# def eval():
+#     from human_eval.data import write_jsonl, read_problems
+#     from tqdm import tqdm, trange
 
-    problems = read_problems()
+#     problems = read_problems()
 
-    num_samples_per_task = 100
-    samples = [
-        dict(task_id=task_id, completion=generate_one_completion(problems[task_id]["prompt"]))
-        for task_id in tqdm(problems)
-        for _ in trange(num_samples_per_task)
-    ]
-    write_jsonl("samples.jsonl", samples)
+#     num_samples_per_task = 100
+#     samples = [
+#         dict(task_id=task_id, completion=generate_one_completion(problems[task_id]["prompt"]))
+#         for task_id in tqdm(problems)
+#         for _ in trange(num_samples_per_task)
+#     ]
+#     write_jsonl("samples.jsonl", samples)

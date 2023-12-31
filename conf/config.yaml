@@ -10,6 +10,7 @@ Optimization:
   token_length: 512
   #TODO: Fix the context length issues
   eos: True # This is chopped off in the middle of the sequence if the context is too long 
+  quantization: False
 
 repositories:
   matplotlib: "https://github.com/matplotlib/matplotlib"
@@ -37,3 +38,7 @@ lora_config:
   bias: none
   task_type: "CAUSAL_LM"
 
+quantization_config:
+  load_in_4bit: True
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: True

@@ -10,6 +10,20 @@ from torch.nn import CrossEntropyLoss
 from transformers import Trainer, TrainingArguments
 
 
+def LoadQbitmodel(model_name: str, quantization_config: dict) -> Any:
+    """
+    Load a quantized model.
+    """
+    from transformers import BitsAndBytesConfig
+    config = BitsAndBytesConfig(
+        load_in_4bit=quantization_config['load_in_4bit'],
+        bnb_4bit_quant_type=quantization_config['bnb_4bit_quant_type'],
+        bnb_4bit_use_double_quant=quantization_config['bnb_4bit_use_double_quant'],
+        bnb_4bit_compute_dtype=torch.bfloat16,
+    )
+    model = AutoModel.from_pretrained(model_name, quantization_config=quantization_config)
+    return model
+
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         """
@@ -39,8 +53,10 @@ class Lora_fine_tuning:
                  model_name: str,
                  tokenizer_name: str,
                  config: Dict) -> None:
-
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        if config['Optimization']['quantization']:
+            self.model = LoadQbitmodel(model_name, config['quantization_config'])
+        else:
+            self.model = AutoModelForCausalLM.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         # self.tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen2-1B")
         # self.model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-1B", trust_remote_code=True, revision="main")
