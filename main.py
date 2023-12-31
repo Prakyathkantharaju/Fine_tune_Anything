@@ -13,7 +13,7 @@ def main(cfg: DictConfig):
     config = dict(cfg)
     # Creating the data set using utils.
     # download the data and saves in the datadirectory this is just once
-    download_data(config, config['Optimization']['data_dir'])
+    # download_data(config, config['Optimization']['data_dir'])
 
     # process the data and save it in the parquet file for easy loading. 
     save_parquet_files(config['Optimization']['data_dir'])
