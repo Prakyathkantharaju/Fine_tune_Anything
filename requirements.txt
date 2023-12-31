@@ -6,4 +6,4 @@ numpy
 wandb
 transformers
 datasets
-peft
+git+https://github.com/Prakyathkantharaju/peft.git
