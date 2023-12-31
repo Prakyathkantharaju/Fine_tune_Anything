@@ -1,13 +1,14 @@
 Optimization:
-  model_name: 'Salesforce/codegen2-1B-mono'
-  tokenizer_name: 'Salesforce/codegen2-1B-mono'
+  model_name: 'Salesforce/codegen2-3_7B'
+  tokenizer_name: 'Salesforce/codegen2-3_7B'
+  result_dir: './results_3_7b_2'
   store_data: True
   epochs: 10
   data_dir: 'data/'
   model_dir: 'models/'
   log_dir: 'logs/'
   wandb: False
-  token_length: 512
+  token_length: 128
   #TODO: Fix the context length issues
   eos: True # This is chopped off in the middle of the sequence if the context is too long 
   quantization: True
@@ -18,16 +19,45 @@ repositories:
   pandas: "https://github.com/pandas-dev/pandas"
   opencv: "https://github.com/opencv/opencv-python"
   scikit-learn: "https://github.com/scikit-learn/scikit-learn"
-  pytorch: 'https://github.com/pytorch/pytorch'
-  tensorflow: 'https://github.com/tensorflow/tensorflow'
-  huggingface: 'https://github.com/huggingface/transformers'
-  accelerate: 'https://github.com/huggingface/accelerate'
-  django: 'https://github.com/django/django'
-  fastapi: 'https://github.com/tiangolo/fastapi'
-  scrapy: 'https://github.com/scrapy/scrapy'
-  gpt-engineering: 'https://github.com/gpt-engineer-org/gpt-engineer'
-  open-assistant: 'https://github.com/LAION-AI/Open-Assistant'
-  fuck: 'https://github.com/nvbn/thefuck'
+  pytorch: "https://github.com/pytorch/pytorch"
+  tensorflow: "https://github.com/tensorflow/tensorflow"
+  huggingface: "https://github.com/huggingface/transformers"
+  accelerate: "https://github.com/huggingface/accelerate"
+  django: "https://github.com/django/django"
+  fastapi: "https://github.com/tiangolo/fastapi"
+  scrapy: "https://github.com/scrapy/scrapy"
+  gpt-engineering: "https://github.com/gpt-engineer-org/gpt-engineer"
+  open-assistant: "https://github.com/LAION-AI/Open-Assistant"
+  fuck: "https://github.com/nvbn/thefuck"
+  Flask: "https://github.com/pallets/flask"
+  requests: "https://github.com/psf/requests"
+  beautifulsoup4: "https://github.com/wention/BeautifulSoup4"
+  ansible: "https://github.com/ansible/ansible"
+  Jupyter Notebook: "https://github.com/jupyter/notebook"
+  Keras: "https://github.com/keras-team/keras"
+  Pillow: "https://github.com/python-pillow/Pillow"
+  SQLAlchemy: "https://github.com/sqlalchemy/sqlalchemy"
+  pytest: "https://github.com/pytest-dev/pytest"
+  bokeh: "https://github.com/bokeh/bokeh"
+  streamlit: "https://github.com/streamlit/streamlit"
+  dash: "https://github.com/plotly/dash"
+  selenium: "https://github.com/SeleniumHQ/selenium"
+  spacy: "https://github.com/explosion/spaCy"
+  gensim: "https://github.com/RaRe-Technologies/gensim"
+  Pygame: "https://github.com/pygame/pygame"
+  SymPy: "https://github.com/sympy/sympy"
+  Salt: "https://github.com/saltstack/salt"
+  tornado: "https://github.com/tornadoweb/tornado"
+  zerorpc: "https://github.com/0rpc/zerorpc-python"
+  plotly: "https://github.com/plotly/plotly.py"
+  kivy: "https://github.com/kivy/kivy"
+  pydantic: "https://github.com/samuelcolvin/pydantic"
+  starlette: "https://github.com/encode/starlette"
+  httpx: "https://github.com/encode/httpx"
+  uvicorn: "https://github.com/encode/uvicorn"
+  celery: "https://github.com/celery/celery"
+  airflow: "https://github.com/apache/airflow"
+
 
 
 

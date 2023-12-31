@@ -10,10 +10,10 @@ from fine_tune.lora_fine_tune import Lora_fine_tuning
 
 @hydra.main(config_path="conf", config_name="config", version_base = None)
 def main(cfg: DictConfig):
-    config = dict(cfg)
+    config = OmegaConf.to_object(cfg)
     # Creating the data set using utils.
     # download the data and saves in the datadirectory this is just once
-    # download_data(config, config['Optimization']['data_dir'])
+    download_data(config, config['Optimization']['data_dir'])
 
     # process the data and save it in the parquet file for easy loading. 
     save_parquet_files(config['Optimization']['data_dir'])

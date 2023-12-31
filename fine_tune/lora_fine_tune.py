@@ -10,18 +10,11 @@ from torch.nn import CrossEntropyLoss
 from transformers import Trainer, TrainingArguments
 
 
-def LoadQbitmodel(model_name: str, quantization_config: dict) -> Any:
+def LoadQbitmodel(model_name: str) -> Any:
     """
     Load a quantized model.
     """
-    from transformers import BitsAndBytesConfig
-    config = BitsAndBytesConfig(
-        load_in_4bit=quantization_config['load_in_4bit'],
-        bnb_4bit_quant_type=quantization_config['bnb_4bit_quant_type'],
-        bnb_4bit_use_double_quant=quantization_config['bnb_4bit_use_double_quant'],
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
-    model = AutoModel.from_pretrained(model_name, quantization_config=config)
+    model = AutoModel.from_pretrained(model_name, load_in_8bit=True, revision="main", trust_remote_code=True)
     return model
 
 class CustomTrainer(Trainer):
@@ -56,8 +49,8 @@ class Lora_fine_tuning:
         if config['Optimization']['quantization']:
             self.model = LoadQbitmodel(model_name, config['quantization_config'])
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name, revision="main", trust_remote_code=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, revision="main", trust_remote_code=True)
         # self.tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen2-1B")
         # self.model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen2-1B", trust_remote_code=True, revision="main")
 
@@ -99,8 +92,8 @@ class Lora_fine_tuning:
     def _generate_token(self) -> None:
         td = pd.read_parquet(self._path + 'train.parquet')
         vd = pd.read_parquet(self._path + 'test.parquet')
-        td = td[pd.Series(td['text'], dtype=str).apply(isinstance, args=(str,))]
-        vd = vd[pd.Series(vd['text'], dtype=str).apply(isinstance, args=(str,))]
+        td = td[td['text'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
+        vd = vd[vd['text'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
         ts = Dataset.from_pandas(td)
         vs = Dataset.from_pandas(vd)
         self.ds = DatasetDict({'train': ts, 'validation': vs})
@@ -110,7 +103,7 @@ class Lora_fine_tuning:
     def _convert_sentence(self, file: pd.DataFrame) -> Dict:
         self.tokenizer.pad_token = self.tokenizer.eos_token
         test = self.tokenizer(["".join(x) for x in file['text']], 
-                              max_length=128, truncation=True, padding="max_length") #TODO: change the max_length to a config file
+                              max_length=self._config['Optimization']['token_length']) #TODO: change the max_length to a config file
         # make sure the length is less than 2048
         test['input_ids'] = [x for x in test['input_ids']]
         test['attention_mask'] = [x for x in test['attention_mask']]
@@ -135,9 +128,10 @@ class Lora_fine_tuning:
 
 
     def _peft(self, arg: Dict) -> None:
-        lora_config = dict(self._lora_config)
-        config = peft.LoraConfig(r=8,
-                target_modules=['lm_head', 'fc_in', 'out_proj', 'fc_out', 'qkv_proj'],
+        config = peft.LoraConfig(r=16,
+                lora_alpha=8, 
+                target_modules=self._lora_config['target_modules'],
+                modules_to_save=["lm_head"],
                 lora_dropout=0.05,
                 task_type = "CAUSAL_LM")
         logging.info("Lora config loaded")
@@ -153,12 +147,12 @@ class Lora_fine_tuning:
     
     def _train(self, training: torch.utils.data.DataLoader, validation: torch.utils.data.DataLoader) -> None:
         training_args = TrainingArguments(
-            output_dir='./results',          # output directory
+            output_dir= self._config['Optimization']['result_dir'],          # output directory
             num_train_epochs=5,              # total number of training epochs
             per_device_train_batch_size=32,  # batch size per device during training
             per_device_eval_batch_size=32,   # batch size for evaluation
             logging_dir='./logs',            # directory for storing logs
-            logging_steps=10,
+            logging_steps=100,
         )
         trainer = CustomTrainer(
             model=self.peft_model,                         # the instantiated 🤗 Transformers model to be trained
