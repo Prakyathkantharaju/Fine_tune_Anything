@@ -27,7 +27,7 @@ def download_data(args: Dict, location: str) -> None:
 # generating a json with the parsing data, split by the \n
 
 def _generate_data(file_name: str) -> Union[List[Dict], None]:
-    with open(file_name, 'r') as f:
+    with open(file_name, 'rb') as f:
         data = f.readlines()
     data = [x for x in data if x != '\n']
     if len(data) < 5:
