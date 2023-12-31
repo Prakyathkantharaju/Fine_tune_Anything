@@ -138,15 +138,16 @@ class Lora_fine_tuning:
                 task_type = "CAUSAL_LM")
         logging.info("Lora config loaded")
         logging.info(f"lora config: {config}")
-        self.peft_model = peft.get_peft_model(self.model, config)
+        if self._config['quantization']:
+            from peft import prepare_model_for_kbit_training
+            self.model = prepare_model_for_kbit_training(self.model)
+            self.peft_model = peft.get_peft_model(self.model, config)
+        else:
+            self.peft_model = peft.get_peft_model(self.model, config)
         logging.info("PEFT model loaded")
         self.peft_model.print_trainable_parameters()
     
     def _train(self, training: torch.utils.data.DataLoader, validation: torch.utils.data.DataLoader) -> None:
-
-
-
-
         training_args = TrainingArguments(
             output_dir='./results',          # output directory
             num_train_epochs=5,              # total number of training epochs

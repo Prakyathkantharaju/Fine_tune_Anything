@@ -10,7 +10,7 @@ Optimization:
   token_length: 512
   #TODO: Fix the context length issues
   eos: True # This is chopped off in the middle of the sequence if the context is too long 
-  quantization: False
+  quantization: True
 
 repositories:
   matplotlib: "https://github.com/matplotlib/matplotlib"
