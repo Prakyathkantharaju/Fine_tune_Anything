@@ -21,8 +21,7 @@ def download_data(args: Dict, location: str) -> None:
         if not os.path.exists("data/" + key):
             os.mkdir("data/" + key)
             repo_url = value + "/zipball/main/"
-            destination_folder =  location + key if location.endswith('/') else location + '/' + value
-            print(destination_folder)
+            destination_folder =  location + key if location.endswith('/') else location + '/' + key
             _download_extract_zip(repo_url, destination_folder)
 
 # generating a json with the parsing data, split by the \n
